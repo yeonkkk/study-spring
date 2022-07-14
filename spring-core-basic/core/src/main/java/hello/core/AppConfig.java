@@ -3,19 +3,34 @@ package hello.core;
 import hello.core.Member.MemberService;
 import hello.core.Member.MemberServiceImpl;
 import hello.core.Member.MemoryMemberRepository;
-import hello.core.discount.FixDiscountPolicy;
+import hello.core.discount.DiscountPolicy;
+import hello.core.discount.RateDiscountPolicy;
 import hello.core.order.OrderService;
 import hello.core.order.OrderServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class AppConfig {
 
+    @Bean
     public MemberService memberService() {
-
-        return new MemberServiceImpl(new MemoryMemberRepository()); // 생성자 주입
+        return new MemberServiceImpl(memberRepository());
     }
 
-    public OrderService orderService() {
+    @Bean
+    public MemoryMemberRepository memberRepository() {
+        return new MemoryMemberRepository();
+    }
 
-        return new OrderServiceImpl(new MemoryMemberRepository(), new FixDiscountPolicy());
+    @Bean
+    public OrderService orderService() {
+        return new OrderServiceImpl(memberRepository(), discountPolicy());
+    }
+
+    @Bean
+    public DiscountPolicy discountPolicy() {
+//        return new FixDiscountPolicy();
+        return new RateDiscountPolicy();
     }
 }
